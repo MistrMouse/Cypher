@@ -1,7 +1,6 @@
 package com.spaulding.tools.Cypher;
 
 import com.spaulding.tools.ASCII;
-import com.spaulding.tools.Filer.Filer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,42 +10,18 @@ public class Cypher {
     public static final int TYPE_ALPHA = 0;
     public static final int TYPE_ALPHA_NUMERIC = 1;
     public static final int TYPE_PRINTABLE = 2;
+    private final String BANK;
 
-    private final String BASIC_ENCRYPTION_KEY = "n5 tp:b]gb\"5y%HsQ<J<zo/ODd~~i6H-P'*4d/\"b=u6V3ifj/rn9*#9H~J2*B#Td";
-    private String FILE_ENCRYPTION_KEY, BANK;
-
-    public Cypher(String name) throws IllegalArgumentException {
-        init(name, checkType(TYPE_PRINTABLE));
+    public Cypher() throws IllegalArgumentException {
+        BANK = checkType(TYPE_PRINTABLE);
     }
 
-    public Cypher(String name, String bank) {
-        init(name, bank);
+    public Cypher(String bank) {
+        BANK = bank;
     }
 
-    public Cypher(String name, int type) throws IllegalArgumentException {
-        init(name, checkType(type));
-    }
-
-    private void init(String name, String bank) {
-        this.BANK = bank;
-        List<String> toWrite = new ArrayList<>();
-        toWrite.add(standardEncode(createKey()));
-        toWrite.add("DO NOT DELETE OR EDIT THIS FILE UNLESS YOU KNOW WHAT YOU ARE DOING");
-        toWrite.add("This file is used as a reference for an encrypted key used for later");
-        toWrite.add("decryption via the Cypher tool. This is typically not ever changed if");
-        toWrite.add("there has been any data that has been encrypted and stored.");
-        List<String> results = Filer.createFile(name.toUpperCase() + "-ENCRYPTION-KEY.txt", toWrite);
-        if (results != null && !results.isEmpty()) {
-            if (results.get(0).startsWith("Error:")) {
-                throw new RuntimeException(String.join(". ", results));
-            }
-            else {
-                FILE_ENCRYPTION_KEY = standardDecode(results.get(0));
-                return;
-            }
-        }
-
-        throw new RuntimeException("Unable to retrieve encryption key from file " + name + ".txt");
+    public Cypher(int type) throws IllegalArgumentException {
+        BANK = checkType(type);
     }
 
     private String checkType(int type) throws IllegalArgumentException {
@@ -78,29 +53,17 @@ public class Cypher {
         return result.toString();
     }
 
-    public String standardEncode(String value) {
-        return exec(value, BASIC_ENCRYPTION_KEY, true);
-    }
-
-    public String standardDecode(String value) {
-        return exec(value, BASIC_ENCRYPTION_KEY, false);
-    }
-
     public String encode(String value, String key) {
         if (value == null || value.isEmpty()) {
             return value;
         }
-        value = exec(value, key, true);
-        value = exec(value, FILE_ENCRYPTION_KEY, true);
-        return standardEncode(value);
+        return exec(value, key, true);
     }
 
     public String decode(String value, String key) {
         if (value == null || value.isEmpty()) {
             return value;
         }
-        value = standardDecode(value);
-        value = exec(value, FILE_ENCRYPTION_KEY, false);
         return exec(value, key, false);
     }
 
