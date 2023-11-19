@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileEncryptionKey {
-
+    public static final String FILE_SUFFIX = "_ENCRYPTION_KEY.txt";
     public final String value;
-    public FileEncryptionKey(String fileName) {
+    public FileEncryptionKey(String keyName) {
         List<String> results = new ArrayList<>();
         Cypher cypher = new Cypher();
         results.add(cypher.createKey());
@@ -17,7 +17,7 @@ public class FileEncryptionKey {
         results.add("This file is used as a reference for an encrypted key used for later");
         results.add("decryption via the Cypher tool. This is typically not ever changed if");
         results.add("there has been any data that has been encrypted and stored.");
-        results = Filer.createFile(fileName, results);
+        results = Filer.createFile(keyName + FILE_SUFFIX, results);
 
         if (results != null && !results.isEmpty()) {
             if (results.get(0).startsWith("Error:")) {
@@ -29,7 +29,7 @@ public class FileEncryptionKey {
             }
         }
 
-        throw new RuntimeException("Unable to retrieve encryption key from file " + fileName + ".txt");
+        throw new RuntimeException("Unable to retrieve encryption key from file " + keyName + FILE_SUFFIX);
     }
 
 }
