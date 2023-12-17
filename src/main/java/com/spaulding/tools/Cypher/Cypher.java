@@ -1,6 +1,6 @@
 package com.spaulding.tools.Cypher;
 
-import com.spaulding.tools.ASCII;
+import com.spaulding.tools.ASCII.ASCII;
 
 import java.util.ArrayList;
 import java.util.List;
